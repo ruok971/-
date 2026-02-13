@@ -339,7 +339,7 @@ Logo.Size = UDim2.fromScale(0.25, 0.25)
 Logo.Position = UDim2.fromScale(0.5, 0.42)
 Logo.AnchorPoint = Vector2.new(0.5, 0.5)
 Logo.BackgroundTransparency = 1
-Logo.Image = "rbxassetid://108455308252343"
+Logo.Image = "rbxassetid://10735162876"
 Logo.ImageTransparency = 1
 Logo.Parent = BG
 
@@ -393,7 +393,7 @@ local WindUI = loadstring(game:HttpGet(
 
 local Window = WindUI:CreateWindow({
     Title = "ERROR HUB [ Test ]",
-    Icon = "rbxassetid://108455308252343",
+    Icon = "rbxassetid://10735162876",
     Author = "Seesa",
     Folder = "ERROR HUB Op script",
     Size = UDim2.fromOffset(580, 460),
