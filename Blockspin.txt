@@ -4,7 +4,7 @@ if not game:IsLoaded() then
         task.wait()
     until game:IsLoaded()
 end
-if not (game.PlaceId == 93540633638154 or game.PlaceId == 93540633638154) then
+if not (game.PlaceId == 104715542330896 or game.PlaceId == 97556409405464) then
     return
 end
 
@@ -339,7 +339,7 @@ Logo.Size = UDim2.fromScale(0.25, 0.25)
 Logo.Position = UDim2.fromScale(0.5, 0.42)
 Logo.AnchorPoint = Vector2.new(0.5, 0.5)
 Logo.BackgroundTransparency = 1
-Logo.Image = "rbxassetid://93540633638154"
+Logo.Image = "rbxassetid://108455308252343"
 Logo.ImageTransparency = 1
 Logo.Parent = BG
 
@@ -392,8 +392,8 @@ local WindUI = loadstring(game:HttpGet(
 ))()
 
 local Window = WindUI:CreateWindow({
-    Title = "CEO HUB [ตาแพ่มไอ้กุ้ง]",
-    Icon = "rbxassetid://93540633638154",
+    Title = "ERROR HUB [ Test ]",
+    Icon = "rbxassetid://108455308252343",
     Author = "Seesa",
     Folder = "ERROR HUB Op script",
     Size = UDim2.fromOffset(580, 460),
@@ -427,7 +427,7 @@ ScreenGui.Parent = CoreGui
 ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
 ToggleBtn.Position = UDim2.new(0, 20, 0.5, -25)
 ToggleBtn.BackgroundTransparency = 1
-ToggleBtn.Image = "rbxassetid://93540633638154" 
+ToggleBtn.Image = "rbxassetid://108455308252343" 
 ToggleBtn.Active = true
 ToggleBtn.Draggable = true
 ToggleBtn.Parent = ScreenGui
