@@ -339,7 +339,7 @@ Logo.Size = UDim2.fromScale(0.25, 0.25)
 Logo.Position = UDim2.fromScale(0.5, 0.42)
 Logo.AnchorPoint = Vector2.new(0.5, 0.5)
 Logo.BackgroundTransparency = 1
-Logo.Image = "rbxassetid://108455308252343"
+Logo.Image = "rbxassetid://93540633638154"
 Logo.ImageTransparency = 1
 Logo.Parent = BG
 
@@ -348,7 +348,7 @@ Text.Size = UDim2.fromScale(1, 0.1)
 Text.Position = UDim2.fromScale(0.5, 0.62)
 Text.AnchorPoint = Vector2.new(0.5, 0.5)
 Text.BackgroundTransparency = 1
-Text.Text = "ERROR HUB"
+Text.Text = "ไอ้เอกไอ้แพ่มไอ้กุ้ง"
 Text.TextColor3 = Color3.fromRGB(255, 255, 255)
 Text.TextScaled = true
 Text.Font = Enum.Font.GothamBold
@@ -392,8 +392,8 @@ local WindUI = loadstring(game:HttpGet(
 ))()
 
 local Window = WindUI:CreateWindow({
-    Title = "ERROR HUB [ Test ]",
-    Icon = "rbxassetid://108455308252343",
+    Title = "ERROR HUB [ กุ้ง ]",
+    Icon = "rbxassetid://93540633638154",
     Author = "Seesa",
     Folder = "ERROR HUB Op script",
     Size = UDim2.fromOffset(580, 460),
@@ -427,7 +427,7 @@ ScreenGui.Parent = CoreGui
 ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
 ToggleBtn.Position = UDim2.new(0, 20, 0.5, -25)
 ToggleBtn.BackgroundTransparency = 1
-ToggleBtn.Image = "rbxassetid://108455308252343" 
+ToggleBtn.Image = "rbxassetid://93540633638154" 
 ToggleBtn.Active = true
 ToggleBtn.Draggable = true
 ToggleBtn.Parent = ScreenGui
