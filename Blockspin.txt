@@ -1897,61 +1897,80 @@ MainTab:Slider({
 })
 
 
-
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-
 local LocalPlayer = Players.LocalPlayer
+
+-- Configuration
+local PICKUP_DISTANCE = 350
+local TOUCH_REPEAT = 5 -- ลดลงมาเหลือ 5 ก็พอ (25 เยอะไปอาจทำให้เซิร์ฟเวอร์เตะ)
+local TICK_RATE = 0.1 -- เช็กทุกๆ 0.1 วินาที (ประหยัดทรัพยากรมาก)
+
+local pickupEnabled = false
 local DroppedItems = workspace:WaitForChild("DroppedItems")
 
-local Character
-local HRP
-
-local PICKUP_DISTANCE = 350
-local TOUCH_REPEAT = 25
-local pickupEnabled = false
-
-
-local function bindCharacter(char)
-    Character = char
-    HRP = char:WaitForChild("HumanoidRootPart", 5)
-end
-
-if LocalPlayer.Character then
-    bindCharacter(LocalPlayer.Character)
-end
-LocalPlayer.CharacterAdded:Connect(bindCharacter)
-
-
-local function firetouch(partA, partB)
-    if not firetouchinterest or not partA or not partB then return end
-    for i = 1, TOUCH_REPEAT do
-        firetouchinterest(partA, partB, 0)
-        firetouchinterest(partA, partB, 1)
+-- ตัวแปรเก็บ Character & HRP แบบ Clean
+local HRP = nil
+local function UpdateCharacter(char)
+    if char then
+        HRP = char:WaitForChild("HumanoidRootPart", 10)
     end
 end
 
+UpdateCharacter(LocalPlayer.Character)
+LocalPlayer.CharacterAdded:Connect(UpdateCharacter)
 
-RunService.RenderStepped:Connect(function()
-    if not pickupEnabled then return end
-    if not HRP or not HRP.Parent then return end
+-- ฟังก์ชันแตะไอเทม (FireTouch)
+local function secureTouch(targetZone)
+    if not HRP or not targetZone or not firetouchinterest then return end
+    for i = 1, TOUCH_REPEAT do
+        firetouchinterest(targetZone, HRP, 0)
+        task.wait() -- เพิ่ม delay เล็กน้อยป้องกันการตรวจจับ (Anticheat)
+        firetouchinterest(targetZone, HRP, 1)
+    end
+end
 
-    for _, item in ipairs(DroppedItems:GetChildren()) do
-        local zone = item:FindFirstChild("PickUpZone")
-        if zone and zone:IsA("BasePart") then
-            local dist = (HRP.Position - zone.Position).Magnitude
-            if dist <= PICKUP_DISTANCE then
-                firetouch(zone, HRP)
+-- Main Loop (รันใน Background)
+task.spawn(function()
+    while true do
+        task.wait(TICK_RATE)
+        
+        if pickupEnabled and HRP then
+            local children = DroppedItems:GetChildren()
+            
+            -- คัดกรองและเรียงลำดับตามระยะทาง (ใกล้สุดไปไกลสุด)
+            local targets = {}
+            for _, item in ipairs(children) do
+                local zone = item:FindFirstChild("PickUpZone")
+                if zone and zone:IsA("BasePart") then
+                    local dist = (HRP.Position - zone.Position).Magnitude
+                    if dist <= PICKUP_DISTANCE then
+                        table.insert(targets, {zone = zone, dist = dist})
+                    end
+                end
+            end
+            
+            -- เรียงคิวเก็บชิ้นที่ใกล้ที่สุดก่อน
+            table.sort(targets, function(a, b) return a.dist < b.dist end)
+            
+            -- ประมวลผลการเก็บ (จำกัดการเก็บต่อรอบเพื่อไม่ให้ Lag)
+            for i = 1, math.min(#targets, 10) do 
+                task.spawn(secureTouch, targets[i].zone)
             end
         end
     end
 end)
 
-
+-- UI Integration
 MainTab:Toggle({
-    Title = "Pickup Item",
+    Title = "Auto Pickup [High Performance]",
     Default = false,
     Callback = function(state)
         pickupEnabled = state
+        if state then
+            print("Auto Pickup: Activated")
+        else
+            print("Auto Pickup: Deactivated")
+        end
     end
 })
