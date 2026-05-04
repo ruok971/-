@@ -339,7 +339,7 @@ Logo.Size = UDim2.fromScale(0.25, 0.25)
 Logo.Position = UDim2.fromScale(0.5, 0.42)
 Logo.AnchorPoint = Vector2.new(0.5, 0.5)
 Logo.BackgroundTransparency = 1
-Logo.Image = "rbxassetid://93540633638154"
+Logo.Image = "rbxassetid://108455308252343"
 Logo.ImageTransparency = 1
 Logo.Parent = BG
 
@@ -348,7 +348,7 @@ Text.Size = UDim2.fromScale(1, 0.1)
 Text.Position = UDim2.fromScale(0.5, 0.62)
 Text.AnchorPoint = Vector2.new(0.5, 0.5)
 Text.BackgroundTransparency = 1
-Text.Text = "ไอ้เอกไอ้แพ่มไอ้กุ้ง"
+Text.Text = "ERROR HUB"
 Text.TextColor3 = Color3.fromRGB(255, 255, 255)
 Text.TextScaled = true
 Text.Font = Enum.Font.GothamBold
@@ -392,8 +392,8 @@ local WindUI = loadstring(game:HttpGet(
 ))()
 
 local Window = WindUI:CreateWindow({
-    Title = "ERROR HUB [ กุ้ง ]",
-    Icon = "rbxassetid://93540633638154",
+    Title = "ERROR HUB [ Test ]",
+    Icon = "rbxassetid://108455308252343",
     Author = "Seesa",
     Folder = "ERROR HUB Op script",
     Size = UDim2.fromOffset(580, 460),
@@ -427,7 +427,7 @@ ScreenGui.Parent = CoreGui
 ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
 ToggleBtn.Position = UDim2.new(0, 20, 0.5, -25)
 ToggleBtn.BackgroundTransparency = 1
-ToggleBtn.Image = "rbxassetid://93540633638154" 
+ToggleBtn.Image = "rbxassetid://108455308252343" 
 ToggleBtn.Active = true
 ToggleBtn.Draggable = true
 ToggleBtn.Parent = ScreenGui
@@ -600,98 +600,39 @@ local function CreateDrawingObjects()
     tracerLine.Color = Color3.fromRGB(255, 50, 50)
     tracerLine.Thickness = 1
     tracerLine.Transparency = 1
+    tracerLine.Visible = false
 
--- ======== Premium Silent Aim: Ultimate Edition ========
-local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local Stats = game:GetService("Stats")
-
-local LocalPlayer = Players.LocalPlayer
-local Camera = Workspace.CurrentCamera
-local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
-
--- ======== Settings & Variables ========
-local SilentAimEnabled = false
-local ShowFOV = true
-local FOV = 130
-local LockPart = "Head"
-local PredictionStrength = 0.165
-
--- ระบบยกเว้นรายชื่อ (จากของเดิม)
-local excludedPlayerNames = {"MithnoFs_49"}
-local excludedPlayersUI = {}
-local __Target = nil
-
--- ======== Drawing / FOV Setup ========
-local SilentFOVCircle
-if not isMobile then
-    SilentFOVCircle = Drawing.new("Circle")
-    SilentFOVCircle.Thickness = 2
-    SilentFOVCircle.NumSides = 64
-    SilentFOVCircle.Transparency = 0.8
-else
-    -- Mobile UI FOV (จากของเดิม)
-    local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-    ScreenGui.Name = "MobileFOV"
-    SilentFOVCircle = Instance.new("Frame", ScreenGui)
-    SilentFOVCircle.Size = UDim2.fromOffset(FOV * 2, FOV * 2)
-    SilentFOVCircle.AnchorPoint = Vector2.new(0.5, 0.5)
-    SilentFOVCircle.Position = UDim2.fromScale(0.5, 0.5)
-    SilentFOVCircle.BackgroundTransparency = 1
-    local circleUI = Instance.new("UICorner", SilentFOVCircle)
-    circleUI.CornerRadius = UDim.new(1, 0)
-    local border = Instance.new("UIStroke", SilentFOVCircle)
-    border.Color = Color3.fromRGB(255, 255, 255)
-    border.Thickness = 2
+    targetDot = Drawing.new("Circle")
+    targetDot.Color = Color3.fromRGB(255, 50, 50)
+    targetDot.Thickness = 2
+    targetDot.NumSides = 12
+    targetDot.Radius = 4
+    targetDot.Filled = true
+    targetDot.Transparency = 0.7
+    targetDot.Visible = false
 end
 
--- ======== Helper Functions ========
-
-local function GetPing()
-    return Stats.Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
-end
-
-local function isPlayerExcluded(playerName)
-    local lowerName = string.lower(playerName)
-    for _, name in ipairs(excludedPlayerNames) do
-        if name ~= "" and string.find(lowerName, string.lower(name)) then return true end
-    end
-    return false
-end
-
--- ระบบดึงความเร็ว (เน้นรถ)
-local function GetTargetVelocity(player)
-    local char = player.Character
-    if not char then return Vector3.zero end
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    
-    if hum and hum.SeatPart then -- ถ้าอยู่บนรถ ใช้ความเร็วรถ
-        return hum.SeatPart.AssemblyLinearVelocity
-    end
-    return hrp and hrp.AssemblyLinearVelocity or Vector3.zero
-end
-
--- ระบบหาเป้าหมาย (No Raycast = ล็อคทะลุกำแพง)
 local function GetClosestTarget()
     local closest = nil
     local shortestDistance = FOV
     local center = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
 
     for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and not isPlayerExcluded(player.Name) then
+        if player ~= LocalPlayer and player.Character then
             local part = player.Character:FindFirstChild(LockPart)
-            local hum = player.Character:FindFirstChildOfClass("Humanoid")
-            
-            if part and hum and hum.Health > 0 then
+            local humanoid = player.Character:FindFirstChild("Humanoid")
+            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+
+            if part and humanoid and humanoid.Health > 0 and hrp then
                 local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
                 if onScreen then
-                    local dist = (Vector2.new(screenPos.X, screenPos.Y) - center).Magnitude
-                    if dist <= shortestDistance then
-                        shortestDistance = dist
-                        closest = player
+                    local screenVector = Vector2.new(screenPos.X, screenPos.Y)
+                    local distanceFromCenter = (screenVector - center).Magnitude
+                    if distanceFromCenter <= FOV and not isPlayerExcluded(player.Name) then
+                        if distanceFromCenter < shortestDistance then
+                            shortestDistance = distanceFromCenter
+                            closest = player
+                        end
                     end
                 end
             end
@@ -700,56 +641,53 @@ local function GetClosestTarget()
     return closest
 end
 
--- ======== The Silent Aim Engine (Hooking) ========
-
-local oldNamecall
-oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
-    local args = {...}
-    local method = getnamecallmethod()
-    
-    if SilentAimEnabled and __Target and __Target.Character then
-        if method == "FindPartOnRayWithIgnoreList" or method == "FindPartOnRay" or method == "Raycast" or method == "FindPartOnRayWithWhitelist" then
-            local targetPart = __Target.Character:FindFirstChild(LockPart)
-            if targetPart then
-                -- คำนวณจุดยิงดักหน้า (Velocity + Ping)
-                local velocity = GetTargetVelocity(__Target)
-                local prediction = velocity * (PredictionStrength + GetPing())
-                local predictedPos = targetPart.Position + prediction
-                
-                if method == "Raycast" then
-                    args[2] = (predictedPos - args[1]).Unit * 1000
-                else
-                    -- สำหรับดักยิงคนบนรถที่ใช้ Ray ระบบเก่า
-                    args[1] = Ray.new(args[1].Origin, (predictedPos - args[1].Origin).Unit * 1000)
-                end
-                return oldNamecall(self, unpack(args))
+local function PredictPosition(origin, targetPos, approxVel, travelTime, gravity)
+    local t = travelTime or 0.15
+    local targetPlayer
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr.Character then
+            local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            if hrp and (hrp.Position - targetPos).Magnitude < 2 then
+                targetPlayer = plr
+                break
             end
         end
     end
-    return oldNamecall(self, unpack(args))
-end)
 
--- ======== Visual Update Loop ========
-
-RunService.Heartbeat:Connect(function()
-    -- อัปเดตตำแหน่งและสถานะวง FOV
-    if not isMobile then
-        SilentFOVCircle.Visible = SilentAimEnabled and ShowFOV
-        SilentFOVCircle.Radius = FOV
-        SilentFOVCircle.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
-        SilentFOVCircle.Color = Color3.fromRGB(255, 255, 255)
-    else
-        SilentFOVCircle.Visible = SilentAimEnabled and ShowFOV
-        SilentFOVCircle.Size = UDim2.fromOffset(FOV * 2, FOV * 2)
+    if not targetPlayer then
+        return targetPos + approxVel * t
     end
-    
-    -- ค้นหาเป้าหมายตลอดเวลา
-    __Target = GetClosestTarget()
-end)
 
--- ======== UI Integration Example ========
--- ใส่ใน Toggle ของคุณ:
--- SilentAimEnabled = state
+    if not __PredictData[targetPlayer] then
+        __PredictData[targetPlayer] = { vel = {}, last = nil, confidence = 0 }
+    end
+
+    local data = __PredictData[targetPlayer]
+    table.insert(data.vel, approxVel)
+    if #data.vel > 12 then table.remove(data.vel, 1) end
+
+    local unstable = false
+    if #data.vel >= 3 then
+        local dv = (data.vel[#data.vel] - data.vel[#data.vel - 1]).Magnitude
+        unstable = dv > 250
+    end
+
+    data.confidence = math.clamp(data.confidence + (unstable and 0.15 or -0.1), 0, 1)
+
+    local smoothVel = Vector3.zero
+    for _, v in ipairs(data.vel) do smoothVel += v end
+    smoothVel /= #data.vel
+
+    local mult = data.confidence > 0.4 and 0.45 or 1.35
+    local predicted = targetPos + (smoothVel * t * mult)
+
+    if data.last then
+        predicted = data.last:Lerp(predicted, data.confidence > 0.4 and 0.15 or 0.3)
+    end
+
+    data.last = predicted
+    return predicted
+end
 
 -- ======== Remote Hook ========
 local Remote
@@ -1959,80 +1897,61 @@ MainTab:Slider({
 })
 
 
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+
 local LocalPlayer = Players.LocalPlayer
-
--- Configuration
-local PICKUP_DISTANCE = 350
-local TOUCH_REPEAT = 5 -- ลดลงมาเหลือ 5 ก็พอ (25 เยอะไปอาจทำให้เซิร์ฟเวอร์เตะ)
-local TICK_RATE = 0.1 -- เช็กทุกๆ 0.1 วินาที (ประหยัดทรัพยากรมาก)
-
-local pickupEnabled = false
 local DroppedItems = workspace:WaitForChild("DroppedItems")
 
--- ตัวแปรเก็บ Character & HRP แบบ Clean
-local HRP = nil
-local function UpdateCharacter(char)
-    if char then
-        HRP = char:WaitForChild("HumanoidRootPart", 10)
-    end
+local Character
+local HRP
+
+local PICKUP_DISTANCE = 350
+local TOUCH_REPEAT = 25
+local pickupEnabled = false
+
+
+local function bindCharacter(char)
+    Character = char
+    HRP = char:WaitForChild("HumanoidRootPart", 5)
 end
 
-UpdateCharacter(LocalPlayer.Character)
-LocalPlayer.CharacterAdded:Connect(UpdateCharacter)
+if LocalPlayer.Character then
+    bindCharacter(LocalPlayer.Character)
+end
+LocalPlayer.CharacterAdded:Connect(bindCharacter)
 
--- ฟังก์ชันแตะไอเทม (FireTouch)
-local function secureTouch(targetZone)
-    if not HRP or not targetZone or not firetouchinterest then return end
+
+local function firetouch(partA, partB)
+    if not firetouchinterest or not partA or not partB then return end
     for i = 1, TOUCH_REPEAT do
-        firetouchinterest(targetZone, HRP, 0)
-        task.wait() -- เพิ่ม delay เล็กน้อยป้องกันการตรวจจับ (Anticheat)
-        firetouchinterest(targetZone, HRP, 1)
+        firetouchinterest(partA, partB, 0)
+        firetouchinterest(partA, partB, 1)
     end
 end
 
--- Main Loop (รันใน Background)
-task.spawn(function()
-    while true do
-        task.wait(TICK_RATE)
-        
-        if pickupEnabled and HRP then
-            local children = DroppedItems:GetChildren()
-            
-            -- คัดกรองและเรียงลำดับตามระยะทาง (ใกล้สุดไปไกลสุด)
-            local targets = {}
-            for _, item in ipairs(children) do
-                local zone = item:FindFirstChild("PickUpZone")
-                if zone and zone:IsA("BasePart") then
-                    local dist = (HRP.Position - zone.Position).Magnitude
-                    if dist <= PICKUP_DISTANCE then
-                        table.insert(targets, {zone = zone, dist = dist})
-                    end
-                end
-            end
-            
-            -- เรียงคิวเก็บชิ้นที่ใกล้ที่สุดก่อน
-            table.sort(targets, function(a, b) return a.dist < b.dist end)
-            
-            -- ประมวลผลการเก็บ (จำกัดการเก็บต่อรอบเพื่อไม่ให้ Lag)
-            for i = 1, math.min(#targets, 10) do 
-                task.spawn(secureTouch, targets[i].zone)
+
+RunService.RenderStepped:Connect(function()
+    if not pickupEnabled then return end
+    if not HRP or not HRP.Parent then return end
+
+    for _, item in ipairs(DroppedItems:GetChildren()) do
+        local zone = item:FindFirstChild("PickUpZone")
+        if zone and zone:IsA("BasePart") then
+            local dist = (HRP.Position - zone.Position).Magnitude
+            if dist <= PICKUP_DISTANCE then
+                firetouch(zone, HRP)
             end
         end
     end
 end)
 
--- UI Integration
+
 MainTab:Toggle({
-    Title = "Auto Pickup [High Performance]",
+    Title = "Pickup Item",
     Default = false,
     Callback = function(state)
         pickupEnabled = state
-        if state then
-            print("Auto Pickup: Activated")
-        else
-            print("Auto Pickup: Deactivated")
-        end
     end
 })
